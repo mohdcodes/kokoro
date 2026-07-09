@@ -116,9 +116,12 @@ export default function Navbar() {
             href={isAdmin ? "/admin" : "/"}
             className="flex items-center gap-2 font-heading text-lg text-kokoro-800"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-kokoro-100 text-lg">
-              🐨
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="Kokoro"
+              className="h-9 w-9 rounded-full object-cover ring-1 ring-kokoro-200"
+            />
             Kokoro
           </Link>
 

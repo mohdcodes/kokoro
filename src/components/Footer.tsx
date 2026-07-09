@@ -59,7 +59,15 @@ export default function Footer() {
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {/* Column 1: brand */}
             <div>
-              <p className="font-heading text-xl text-kokoro-800">🐨 Kokoro</p>
+              <p className="flex items-center gap-2 font-heading text-xl text-kokoro-800">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logo.png"
+                  alt="Kokoro"
+                  className="h-10 w-10 rounded-full object-cover ring-1 ring-kokoro-200"
+                />
+                Kokoro
+              </p>
               <p
                 className="mt-1 text-lg text-kokoro-600"
                 style={{ fontFamily: "var(--font-script)" }}

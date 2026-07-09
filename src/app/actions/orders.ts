@@ -1,15 +1,21 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
 import { createOrderForCurrentUser, updateOrderStatusInDb, type NewOrderItemInput } from "@/lib/orders";
 import { logActivity } from "@/lib/audit";
+import { notifyUser, notifyAdmins } from "@/lib/notify";
 import type { OrderStatus } from "@/lib/types";
 
 export async function createOrder(items: NewOrderItemInput[], notes: string, orderName: string) {
   const result = await createOrderForCurrentUser(items, notes, orderName);
   if (result.order) {
     revalidatePath("/orders");
+    // Notify admins responsible for orders that a new order just came in.
+    await notifyAdmins("orders", {
+      title: "New order received",
+      body: `${result.order.order_name || "A customer"} placed an order (₹${result.order.total}).`,
+      url: "/admin/orders",
+    });
   }
   return result;
 }
@@ -62,23 +68,12 @@ export async function updateOrderStatus(
         status === "cancelled" && cancelReason?.trim()
           ? `Your order was cancelled: ${cancelReason.trim()}`
           : message.body;
-      try {
-        const supabase = await createClient();
-        const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:9000";
-        await fetch(`${baseUrl}/api/push/send`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: order.user_id,
-            title: message.title,
-            body,
-            url: `/orders/${orderId}`,
-          }),
-        });
-        void supabase; // supabase client not needed directly here; send route uses service role
-      } catch (err) {
-        console.error("Failed to trigger push notification", err);
-      }
+      // Notify the customer directly (no internal fetch — works regardless of site URL).
+      await notifyUser(order.user_id, {
+        title: message.title,
+        body,
+        url: `/orders/${orderId}`,
+      });
     }
   }
 

@@ -4,11 +4,17 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createReview } from "@/lib/reviews";
 import { logActivity } from "@/lib/audit";
+import { notifyAdmins } from "@/lib/notify";
 
 export async function submitReview(orderId: string, rating: number, comment: string) {
   const result = await createReview(orderId, rating, comment);
   if (result.review) {
     revalidatePath(`/orders/${orderId}`);
+    await notifyAdmins("reviews", {
+      title: "New review submitted",
+      body: `${result.review.reviewer_name || "A guest"} left a ${result.review.rating}★ review — awaiting approval.`,
+      url: "/admin/reviews",
+    });
   }
   return result;
 }

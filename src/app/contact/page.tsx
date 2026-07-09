@@ -3,7 +3,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Clock, Mail, MapPin, Phone, Sparkles } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { submitInquiry } from "@/app/actions/contact";
 
 const INQUIRY_TYPES = [
   { value: "general", label: "General" },
@@ -25,10 +25,7 @@ export default function ContactPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
-    const supabase = createClient();
-    const { error } = await supabase
-      .from("contact_messages")
-      .insert({ name, email, phone: phone || null, inquiry_type: inquiryType, message });
+    const { error } = await submitInquiry({ name, email, phone, inquiryType, message });
     setSubmitting(false);
 
     if (error) {

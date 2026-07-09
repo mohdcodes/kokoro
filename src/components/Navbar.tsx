@@ -111,7 +111,7 @@ export default function Navbar() {
     <>
       {/* z-60: sits above sticky bars, cart drawer and page content; only toasts go higher. */}
       <div className="fixed inset-x-0 top-4 z-[60] mx-auto w-[95%] max-w-4xl">
-        <nav className="glass-nav flex items-center justify-between rounded-full px-4 py-2.5 sm:px-6">
+        <nav className="glass-nav flex items-center justify-between rounded-full py-1.5 pl-2 pr-4 sm:pl-3 sm:pr-6">
           <Link
             href={isAdmin ? "/admin" : "/"}
             className="flex items-center gap-2 font-heading text-lg text-kokoro-800"
@@ -120,9 +120,9 @@ export default function Navbar() {
             <img
               src="/logo.png"
               alt="Kokoro"
-              className="h-9 w-9 rounded-full object-cover ring-1 ring-kokoro-200"
+              className="h-11 w-11 shrink-0 rounded-full object-cover object-center ring-1 ring-kokoro-200"
             />
-            Kokoro
+            <span className="leading-none">Kokoro</span>
           </Link>
 
           {isAdmin ? (
